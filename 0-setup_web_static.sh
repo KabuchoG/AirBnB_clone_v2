@@ -1,13 +1,44 @@
 #!/usr/bin/env bash
-# Script that configures Nginx server with some folders and files
-apt-get -y update
-apt-get -y install nginx
-service nginx start
-mkdir -p /data/web_static/releases/test/
+# This script sets up a web server for deployment
+apt-get update
+apt-get install -y nginx
+
 mkdir -p /data/web_static/shared/
-echo "Holberton School" > /data/web_static/releases/test/index.html
-ln -sf /data/web_static/releases/test/ /data/web_static/current
-chown -R ubuntu:ubuntu /data/
-sed -i '38i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tautoindex off;\n\t}\n' /etc/nginx/sites-available/default
+mkdir -p /data/web_static/releases/test/
+cat > /data/web_static/releases/test/index.html << EOF
+<html>
+  <head>
+  </head>
+  <body>
+    Holberton School
+  </body>
+</html>
+EOF
+
+rm -rf /data/web_static/current
+ln -s /data/web_static/releases/test/ /data/web_static/current
+
+chown -R ubuntu /data
+chgrp -R ubuntu /data
+
+cat > /etc/nginx/sites-available/default << EOF
+# Default server configuration
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	add_header X-Served-By \$hostname;
+	root /var/www/html;
+	index index.html index.htm;
+ 
+	location /hbnb_static {
+		alias /data/web_static/current;
+		index index.html index.htm;
+	}
+	location =/redirect_me {
+		return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+	}
+	error_page 404 /404.html;
+}
+EOF
+
 service nginx restart
-exit 0
