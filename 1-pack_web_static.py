@@ -27,6 +27,7 @@ from fabric.api import local
 
 
 def do_pack():
+    """Create an archive"""
     zip_name = "web-static_{}.tgz".format(
         datetime.now().strftime("%Y%m%d%H%M%S"))
     if not os.path.exists("versions"):
