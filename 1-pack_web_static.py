@@ -30,9 +30,11 @@ def do_pack():
     """Create an archive"""
     zip_name = "web-static_{}.tgz".format(
         datetime.now().strftime("%Y%m%d%H%M%S"))
+    z_path = "versions/{}".format(zip_name)
     if not os.path.exists("versions"):
         local("mkdir -p versions")
-    if local("tar -czvf versions/{} web_static".format(zip_name)).failed is False:
-        return zip_name
+    if local("tar -czvf {} web_static".
+             format(z_path)).failed is False:
+        return z_path
     else:
         return None
