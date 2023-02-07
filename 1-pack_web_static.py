@@ -21,20 +21,19 @@ def do_pack():
         return None
     return file
 
-# from datetime import datetime
-# import os
-# from fabric.api import local
+from datetime import datetime
+import os
+from fabric.api import local
 
 
-# def do_pack():
-#     """Create an archive"""
-#     zip_name = "web-static_{}.tgz".format(
-#         datetime.now().strftime("%Y%m%d%H%M%S"))
-#     z_path = "versions/{}".format(zip_name)
-#     if not os.path.exists("versions"):
-#         local("mkdir -p versions")
-#     if local("tar -czvf {} web_static".
-#              format(z_path)).failed is False:
-#         return z_path
-#     else:
-#         return None
+def do_pack():
+    """Create an archive"""
+    zip_name = "web-static_{}.tgz".format(
+        datetime.now().strftime("%Y%m%d%H%M%S"))
+    z_path = "versions/{}".format(zip_name)
+    if not os.path.exists("versions"):
+        local("mkdir -p versions")
+    if local("tar -czvf {} web_static".
+             format(z_path)).failed is True:
+        return None
+    return z_path
