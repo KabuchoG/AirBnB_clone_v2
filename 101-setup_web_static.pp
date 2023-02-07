@@ -1,59 +1,62 @@
-# This puppet mainfest installs and configures a nginx server
-$config="# Default server configuration
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    add_header X-Served-By \$hostname;
-    root /var/www/html;
-    index index.html index.htm;
- 
-    location /hbnb_static {
-        alias /data/web_static/current;
-        index index.html index.htm;
-    }
-    location =/redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-    error_page 404 /404.html;
-}
-"
+# Script that configures Nginx server with some folders and files
 
-exec { 'update packages':
-    command => '/usr/bin/apt update'
+exec {'update':
+  provider => shell,
+  command  => 'sudo apt-get -y update',
+  before   => Exec['install Nginx'],
 }
--> package { 'nginx':
-    ensure => 'installed'
+
+exec {'install Nginx':
+  provider => shell,
+  command  => 'sudo apt-get -y install nginx',
+  before   => Exec['start Nginx'],
 }
--> exec { 'create shred folder':
-    command => '/bin/mkdir -p /data/web_static/shared/'
+
+exec {'start Nginx':
+  provider => shell,
+  command  => 'sudo service nginx start',
+  before   => Exec['create first directory'],
 }
--> exec { 'create data releases folder':
-    command => '/bin/mkdir -p /data/web_static/releases/test/'
+
+exec {'create first directory':
+  provider => shell,
+  command  => 'sudo mkdir -p /data/web_static/releases/test/',
+  before   => Exec['create second directory'],
 }
--> file { 'create test index.html':
-    ensure  => 'present',
-    name    => 'index.html',
-    path    => '/data/web_static/releases/test/index.html',
-    content => 'Holberton School for the win!\n'
+
+exec {'create second directory':
+  provider => shell,
+  command  => 'sudo mkdir -p /data/web_static/shared/',
+  before   => Exec['content into html'],
 }
--> exec { 'remove symbolic link':
-    command => '/bin/rm -rf /data/web_static/current'
+
+exec {'content into html':
+  provider => shell,
+  command  => 'echo "Holberton School" | sudo tee /data/web_static/releases/test/index.html',
+  before   => Exec['symbolic link'],
 }
--> exec { 'create a simbolic link for current release':
-    command => '/bin/ln -s /data/web_static/releases/test/ /data/web_static/current'
+
+exec {'symbolic link':
+  provider => shell,
+  command  => 'sudo ln -sf /data/web_static/releases/test/ /data/web_static/current',
+  before   => Exec['put location'],
 }
--> exec { 'change owner':
-    command => '/bin/chown -R ubuntu /data'
+
+exec {'put location':
+  provider => shell,
+  command  => 'sudo sed -i \'38i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tautoindex off;\n\t}\n\' /etc/nginx/sites-available/default',
+  before   => Exec['restart Nginx'],
 }
--> exec { 'change group':
-    command => '/bin/chgrp -R ubuntu /data'
+
+exec {'restart Nginx':
+  provider => shell,
+  command  => 'sudo service nginx restart',
+  before   => File['/data/']
 }
--> file { 'update nginx config file':
-    ensure  => 'present',
-    name    => 'default',
-    path    => '/etc/nginx/sites-available/default',
-    content => $config
-}
--> service { 'nginx':
-    ensure => 'running'
+
+file {'/data/':
+  ensure  => directory,
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  recurse => true,
 }
