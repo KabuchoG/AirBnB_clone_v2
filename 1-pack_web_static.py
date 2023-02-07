@@ -32,8 +32,7 @@ def do_pack():
         datetime.now().strftime("%Y%m%d%H%M%S"))
     if not os.path.exists("versions"):
         local("mkdir -p versions")
-    if local("tar -czvf versions/{} web_static".
-             format(zip_name)).failed is False:
+    if local("tar -czvf versions/{} web_static".format(zip_name)).failed is False:
         return zip_name
     else:
         return None
