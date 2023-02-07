@@ -32,7 +32,3 @@ def do_pack():
         return z_path
     else:
         return None
-<<<<<<< HEAD
-
-=======
->>>>>>> cd893cdaba460d4cf8371185f35844537a49f599
