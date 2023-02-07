@@ -57,7 +57,7 @@ def do_deploy(archive_path):
     r_path = rel_path.split(".")
     g_name = r_path[0]
     f_path = "/data/web_static/releases/{}".format(g_name)
-    
+
     try:
         put("archive_path", "/tmp/")
         run("tar -xzvf /tmp/{} -C {}".format(rel_path, f_path))
