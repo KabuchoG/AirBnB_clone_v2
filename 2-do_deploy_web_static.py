@@ -61,7 +61,7 @@ def do_deploy(archive_path):
     try:
         put("archive_path", "/tmp/")
         run("tar -xzvf /tmp/{} -C {}".format(rel_path, f_path))
-        run("rm /tmp/{}".format())
+        run("rm /tmp/{}".format(g_name))
         run("rm -rf /data/web_static/current")
         run("ln -sf {} /data/web_static/current".format(f_path))
         return True
