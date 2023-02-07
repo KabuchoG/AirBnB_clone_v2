@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # Fabfile to generates a .tgz archive from the contents of web_static.
-import os.path
-from datetime import datetime
-from fabric.api import local
+# import os.path
+# from datetime import datetime
+# from fabric.api import local
 
 
 # def do_pack():
@@ -28,8 +28,7 @@ def do_pack():
     if not os.path.exists("versions"):
         local("mkdir -p versions")
     z_path = "versions/{}".format(zip_name)
-    local("tar -czvf {} web_static".format(z_path))
-    if os.path.exists(z_path):
+    if local("tar -czvf {} web_static".format(z_path)).failed is False:
         return z_path
     else:
         return None
