@@ -6,7 +6,7 @@ import shlex
 import os
 
 
-env.hosts = ['44.211.97.124', '34.228.52.136']
+env.hosts = ["54.160.120.73", "54.210.52.90"]
 env.user = "ubuntu"
 
 
@@ -38,3 +38,34 @@ def do_deploy(archive_path):
         return True
     except:
         return False
+
+
+# def do_deploy(archive_path):
+#     """Distributes an archive to different servers"""
+#     from fabric.api import env, put, run
+#     import os
+
+#     env.hosts = ["54.160.120.73", "54.210.52.90"]
+#     env.user = "ubuntu"
+#     env.key_filename = "~/.ssh/id_rsa)"
+
+#     if not os.path.exists(archive_path):
+#         return False
+#     release_path = archive_path.replace('/', ' ')
+#     re_list = release_path.split(" ")
+#     rel_path = re_list[-1]
+#     r_path = rel_path.split(".")
+#     g_name = r_path[0]
+#     f_path = "/data/web_static/releases/{}".format(g_name)
+
+#     try:
+#         put("archive_path", "/tmp/")
+#         run("tar -xzvf /tmp/{} -C {}".format(rel_path, f_path))
+#         run("rm /tmp/{}".format(g_name))
+#         run("rm -rf /data/web_static/current")
+#         run("ln -sf {} /data/web_static/current".format(f_path))
+#         return True
+
+#     except Exception:
+#         print("Error Executing the file")
+#         return False
